@@ -25,13 +25,13 @@ public class GlobalControllerAdvice {
 	//		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 	//	}
 
-//	@ExceptionHandler(Exception.class)
-//	public void exception(Exception e) {
-//		System.out.println("--------------------");
-//		System.out.println(e.getClass().getName());
-//		System.out.println(e.getMessage());
-//		System.out.println("--------------------");
-//	}
+	@ExceptionHandler(Exception.class)
+	public void exception(Exception e) {
+		System.out.println("--------------------");
+		System.out.println(e.getClass().getName());
+		System.out.println(e.getMessage());
+		System.out.println("--------------------");
+	}
 
 	/**
 	 * Data로 예외를 내려주는 방법
