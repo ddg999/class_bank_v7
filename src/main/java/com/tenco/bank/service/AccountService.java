@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tenco.bank.dto.DepositDTO;
 import com.tenco.bank.dto.SaveDTO;
+import com.tenco.bank.dto.TransferDTO;
 import com.tenco.bank.dto.WithdrawalDTO;
 import com.tenco.bank.handler.exception.DataDeliveryException;
 import com.tenco.bank.handler.exception.RedirectException;
@@ -135,4 +136,63 @@ public class AccountService {
 			throw new DataDeliveryException(Define.FAILED_PROCESSING, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// 이체 기능 만들기
+	// 1. 출금 계좌 존재 여부 확인 -- select
+	// 2. 입금 계좌 존재 여부 확인 -- select
+	// 3. 출금 계좌 본인 소유 확인 -- 객체 상태 값과 세션 ID 비교
+	// 4. 출금 계좌 비밀번호 확인 -- 객체 상태 값과 dto 비교 
+	// 5. 출금 계좌 잔액 확인 -- 객체 상태 값과 dto 비교
+	// 6. 입금 계좌 객체 상태값 변경 처리 (잔액+거래금액)
+	// 7. 입금 계좌 -- update 처리
+	// 8. 출금 계좌 객체 상태값 변경 처리 (잔액-거래금액)
+	// 9. 출금 계좌 -- update 처리
+	// 10. 거래 내역 등록 처리
+	@Transactional
+	public void updateAccountTransfer(TransferDTO dto, Integer principalId) {
+		// 1
+		Account wAccoutEntity = accountRepository.findByNumber(dto.getWAccountNumber());
+		if (wAccoutEntity == null) {
+			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.BAD_REQUEST);
+		}
+		// 2
+		Account dAccoutEntity = accountRepository.findByNumber(dto.getDAccountNumber());
+		if (dAccoutEntity == null) {
+			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.BAD_REQUEST);
+		}
+		// 3
+		wAccoutEntity.checkOwner(principalId);
+
+		// 4
+		wAccoutEntity.checkPassword(dto.getPassword());
+
+		// 5
+		wAccoutEntity.checkBalance(dto.getAmount());
+
+		// 6
+		dAccoutEntity.deposit(dto.getAmount());
+
+		// 7
+		accountRepository.updateById(dAccoutEntity);
+
+		// 8
+		wAccoutEntity.withdraw(dto.getAmount());
+
+		// 9
+		accountRepository.updateById(wAccoutEntity);
+
+		// 10
+		History history = new History();
+		history.setAmount(dto.getAmount());
+		history.setWBalance(wAccoutEntity.getBalance());
+		history.setDBalance(dAccoutEntity.getBalance());
+		history.setWAccountId(wAccoutEntity.getId());
+		history.setDAccountId(dAccoutEntity.getId());
+
+		int rowResultCount = historyRepository.insert(history);
+		if (rowResultCount != 1) {
+			throw new DataDeliveryException(Define.FAILED_PROCESSING, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 }

@@ -7,9 +7,6 @@
 <div class="col-sm-8">
 	<h2>입금 요청(인증)</h2>
 	<h5>Bank App에 오신걸 환영합니다</h5>
-	<!-- 
-		insert into account_tb(number, password, balance, user_id, created_at)
-	 -->
 	<form action="/account/deposit" method="post">
 		<div class="form-group">
 			<label for="dAccountNumber">입금 계좌 번호:</label> <input type="text" class="form-control" placeholder="Enter account number" id="dAccountNumber" name="dAccountNumber" value="1111">
