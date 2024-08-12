@@ -33,15 +33,16 @@
 			case
 			when h.w_account_id = #{accountId} then (h.w_balance)
 			when h.d_account_id = #{accountId} then (h.d_balance)
-			end as balance,
-			coalesce(cast(wa.number as char(10)), 'ATM') as sender,
-			coalesce(cast(da.number as char(10)), 'ATM') as receiver,
+			end balance,
+			coalesce(cast(wa.number as char(10)), 'ATM') sender,
+			coalesce(cast(da.number as char(10)), 'ATM') receiver,
 			h.created_at
 			from history_tb as h
-			left join account_tb as wa on h.w_account_id = wa.id
-			left join account_tb as da on h.d_account_id = da.id
+			left join account_tb wa on h.w_account_id = wa.id
+			left join account_tb da on h.d_account_id = da.id
 			where h.w_account_id = #{accountId} OR h.d_account_id = #{accountId}
 			order by h.created_at desc
+			limit #{limit} offset #{offset}
 		</if>
 		<if test="type == 'deposit'">
 			select h.id, h.amount, h.d_balance balance, h.created_at,
@@ -52,6 +53,7 @@
 			left join account_tb da on da.id = h.d_account_id
 			where h.d_account_id = #{accountId}
 			order by h.created_at desc
+			limit #{limit} offset #{offset}
 		</if>
 		<if test="type == 'withdrawal'">
 			select h.id, h.amount, h.w_balance balance, h.created_at,
@@ -62,7 +64,25 @@
 			left join account_tb da on da.id = h.d_account_id
 			where h.w_account_id = #{accountId}
 			order by h.created_at desc
+			limit #{limit} offset #{offset}
 		</if>
 	</select>
-
+	
+	<select id="countByAccountIdAndType" resultType="int">
+		<if test="type == 'all'">
+			select count(*)
+			from history_tb h
+			where h.w_account_id = #{accountId} OR h.d_account_id = #{accountId}
+		</if>
+		<if test="type == 'deposit'">
+			select count(*)
+			from history_tb h
+			where h.d_account_id = #{accountId}
+		</if>
+		<if test="type == 'withdrawal'">
+			select count(*)
+			from history_tb h
+			where h.w_account_id = #{accountId}
+		</if>
+	</select>
 </mapper>

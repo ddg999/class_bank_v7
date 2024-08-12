@@ -27,7 +27,6 @@
 					</c:forEach>
 				</tbody>
 			</table>
-
 		</c:when>
 		<c:otherwise>
 			<div class="jumbotron display-4">
@@ -35,6 +34,28 @@
 			</div>
 		</c:otherwise>
 	</c:choose>
+	<!-- Pagination -->
+		<div class="d-flex justify-content-center">
+			<ul class="pagination">
+			
+				<!-- Previous Page Link -->
+				<li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
+					<a class="page-link" href="?page=${currentPage - 1}&size=${size}">&lt;</a>
+				</li>
+				
+				<!-- Page Numbers -->
+				<c:forEach begin="1" end="${totalPages}" var="page">
+					<li class="page-item <c:if test='${currentPage == page}'>active</c:if>">
+						<a class="page-link" href="?page=${page}&size=${size}">${page}</a>
+					</li>
+				</c:forEach>
+				
+				<!-- Next Page Link -->
+				<li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
+					<a class="page-link" href="?page=${currentPage + 1}&size=${size}">&gt;</a>
+				</li>
+			</ul>
+		</div>
 
 </div>
 <!-- end of col-sm-8  -->

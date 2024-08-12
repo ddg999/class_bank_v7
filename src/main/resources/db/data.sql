@@ -13,6 +13,30 @@ values('1111', '1234', 1600, 1, now());
 
 insert into account_tb
 		(number, password, balance, user_id, created_at)
+values('1112', '1234', 1200, 1, now());      
+
+insert into account_tb
+		(number, password, balance, user_id, created_at)
+values('1113', '1234', 1300, 1, now());      
+
+insert into account_tb
+		(number, password, balance, user_id, created_at)
+values('1114', '1234', 1400, 1, now());      
+
+insert into account_tb
+		(number, password, balance, user_id, created_at)
+values('1115', '1234', 1500, 1, now());     
+ 
+insert into account_tb
+		(number, password, balance, user_id, created_at)
+values('1116', '1234', 1600, 1, now());
+  
+insert into account_tb
+		(number, password, balance, user_id, created_at)
+values('1117', '1234', 1700, 1, now());   
+
+insert into account_tb
+		(number, password, balance, user_id, created_at)
 values('2222', '1234', 1100, 2, now());        
 
 insert into account_tb

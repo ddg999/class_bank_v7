@@ -13,9 +13,8 @@
 		</div>
 		<br>
 		<div>
-			<a href="/account/detail/${account.id}?type=all" class="btn btn-outline-primary">전체</a>&nbsp;
-			<a href="/account/detail/${account.id}?type=deposit" class="btn btn-outline-primary">입금</a>&nbsp;
-			<a href="/account/detail/${account.id}?type=withdrawal" class="btn btn-outline-primary">출금</a>&nbsp;
+			<a href="/account/detail/${account.id}?type=all" class="btn btn-outline-primary">전체</a>&nbsp; <a href="/account/detail/${account.id}?type=deposit" class="btn btn-outline-primary">입금</a>&nbsp; <a
+				href="/account/detail/${account.id}?type=withdrawal" class="btn btn-outline-primary">출금</a>&nbsp;
 		</div>
 		<br>
 		<table class="table table-striped">
@@ -30,16 +29,39 @@
 			</thead>
 			<tbody>
 				<c:forEach var="historyAccount" items="${historyList}">
-				<tr>
-					<th>${historyAccount.timestampToString(historyAccount.createdAt)}</th>
-					<th>${historyAccount.sender}</th>
-					<th>${historyAccount.receiver}</th>
-					<th>${historyAccount.formatKoreanWon(historyAccount.amount)}</th>
-					<th>${historyAccount.formatKoreanWon(historyAccount.balance)}</th>
-				</tr>
+					<tr>
+						<th>${historyAccount.timestampToString(historyAccount.createdAt)}</th>
+						<th>${historyAccount.sender}</th>
+						<th>${historyAccount.receiver}</th>
+						<th>${historyAccount.formatKoreanWon(historyAccount.amount)}</th>
+						<th>${historyAccount.formatKoreanWon(historyAccount.balance)}</th>
+					</tr>
 				</c:forEach>
 			</tbody>
 		</table>
+		<br>
+		<!-- Pagination -->
+		<div class="d-flex justify-content-center">
+			<ul class="pagination">
+			
+				<!-- Previous Page Link -->
+				<li class="page-item <c:if test='${currentPage == 1}'>disabled</c:if>">
+					<a class="page-link" href="?type=${type}&page=${currentPage - 1}&size=${size}">&lt;</a>
+				</li>
+				
+				<!-- Page Numbers -->
+				<c:forEach begin="1" end="${totalPages}" var="page">
+					<li class="page-item <c:if test='${currentPage == page}'>active</c:if>">
+						<a class="page-link" href="?type=${type}&page=${page}&size=${size}">${page}</a>
+					</li>
+				</c:forEach>
+				
+				<!-- Next Page Link -->
+				<li class="page-item <c:if test='${currentPage == totalPages}'>disabled</c:if>">
+					<a class="page-link" href="?type=${type}&page=${currentPage + 1}&size=${size}">&gt;</a>
+				</li>
+			</ul>
+		</div>
 	</div>
 </div>
 <!-- end of col-sm-8  -->

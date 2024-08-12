@@ -92,7 +92,7 @@ public class AccountController {
 	 * @return list.jsp 
 	 */
 	@GetMapping({ "/list", "/" })
-	public String listPage(Model model) {
+	public String listPage(@RequestParam(name = "size", defaultValue = "5") int size, @RequestParam(name = "page", defaultValue = "1") int page, Model model) {
 
 		// 1. 인증검사 
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
@@ -101,12 +101,20 @@ public class AccountController {
 		}
 		// 2. 유효성 검사 
 		// 3. 서비스 호출 
-		List<Account> accountList = accountService.readAccountListByUserId(principal.getId());
+
+		int totalRecords = accountService.countAccountByuserId(principal.getId());
+		int totalPages = (int) Math.ceil((double) totalRecords / size);
+
+		List<Account> accountList = accountService.readAccountListByUserId(principal.getId(), page, size);
 		if (accountList.isEmpty()) {
 			model.addAttribute("accountList", null);
 		} else {
 			model.addAttribute("accountList", accountList);
 		}
+
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("size", size);
 
 		// JSP 데이터를 넣어 주는 방법 
 		return "account/list";
@@ -256,7 +264,8 @@ public class AccountController {
 	 * 주소설계 : http://localhost:8080/account/detail/1?type=all, deposit, withdraw
 	 */
 	@GetMapping("/detail/{accountId}")
-	public String detail(@PathVariable(name = "accountId") Integer accountId, @RequestParam(required = false, name = "type") String type, Model model) {
+	public String detail(@PathVariable(name = "accountId") Integer accountId, @RequestParam(required = false, name = "type") String type, @RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "2") int size, Model model) {
 		// 인증 검사
 		User principal = (User) session.getAttribute(Define.PRINCIPAL);
 		if (principal == null) {
@@ -269,11 +278,20 @@ public class AccountController {
 			throw new DataDeliveryException("유효하지 않은 접근 입니다", HttpStatus.BAD_REQUEST);
 		}
 
+		// 페이지 갯수를 계산하기 위해서 총 페이지 수를 계산해주어야한다.
+		int totalRecords = accountService.countHistoryByAccountIdAndType(type, accountId);
+		int totalPages = (int) Math.ceil((double) totalRecords / size);
+
 		Account account = accountService.readAccountById(accountId);
-		List<HistoryAccount> historyList = accountService.readHistoryByAccountId(type, accountId);
+		List<HistoryAccount> historyList = accountService.readHistoryByAccountId(type, accountId, page, size);
 
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
+
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("type", type);
+		model.addAttribute("size", size);
 
 		return "account/detail";
 	}
