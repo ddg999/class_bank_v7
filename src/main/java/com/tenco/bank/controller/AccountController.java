@@ -26,20 +26,17 @@ import com.tenco.bank.service.AccountService;
 import com.tenco.bank.utils.Define;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Controller // IoC 대상(싱글톤으로 관리)
 @RequestMapping("/account")
+@RequiredArgsConstructor
 public class AccountController {
 
 	// 계좌 생성 화면 요청 - DI 처리
-	private final HttpSession session;
-	private AccountService accountService;
-
 	@Autowired
-	public AccountController(AccountService accountService, HttpSession session) {
-		this.session = session;
-		this.accountService = accountService;
-	}
+	private final HttpSession session;
+	private final AccountService accountService;
 
 	/**
 	 * 계좌 생성 페이지 요청
@@ -127,11 +124,6 @@ public class AccountController {
 	@GetMapping("/withdrawal")
 	public String withdrawPage() {
 		// 1. 인증검사 
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
-
 		return "account/withdrawal";
 	}
 
@@ -176,10 +168,6 @@ public class AccountController {
 	 */
 	@GetMapping("/deposit")
 	public String depositPage() {
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
 		return "account/deposit";
 	}
 
